@@ -23,6 +23,7 @@ And below table indicates the experiment result from PC environment.
 | RetinaFace_Resnet50    | 1.0000                 | 1.99225          |
 | RetinaFace_MobilenetV1 | 1.0000                 | 0.1849           |
 
+
 You can use below command to look around different models.
 
 * Pytorch_DSFD[https://github.com/hukkelas/DSFD-Pytorch-Inference] - base repository
@@ -31,11 +32,13 @@ You can use below command to look around different models.
 git checkout Pytorch_DSFD
 ```
 
+
 * FaceBoxes[https://github.com/XiaXuehai/faceboxes] - base repository
 
 ```
 git checkout Pytorch_FaceBoxes
 ```
+
 
 * PyramidBox[https://github.com/EricZgw/PyramidBox] - base repository
 
@@ -43,17 +46,20 @@ git checkout Pytorch_FaceBoxes
 git checkout Tensorflow_PyramidBox
 ```
 
+
 * RetinaFace_Resnet50[https://github.com/hukkelas/DSFD-Pytorch-Inference] - base repository
 
 ```
 git checkout Pytorch_RetinaFace_Resnet50
 ```
 
+
 * RetinaFace_MobilenetV1[https://github.com/hukkelas/DSFD-Pytorch-Inference] - base repository
 
 ```
 git checkout Pytorch_RetinaFace_MobilenetV1
 ```
+
 
 ## Deployment
 
