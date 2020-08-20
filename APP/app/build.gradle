@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "kr.ac.jbnu.ssel.dsfd"
+        applicationId "kr.ac.jbnu.ssel.app"
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 1

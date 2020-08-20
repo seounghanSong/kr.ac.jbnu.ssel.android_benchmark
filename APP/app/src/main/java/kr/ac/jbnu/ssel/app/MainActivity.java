@@ -29,18 +29,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ArrayList<InputStream> imagesFromAsset = new ArrayList<>();
+        Integer counter = 0;
 
         try {
             // Retrieving all the bitmap under assets/images folder
-            String[] images =getAssets().list("images");
+            String[] images = getAssets().list("test_images");
             assert images != null;
 
             for (String image_name : images) {
-                imagesFromAsset.add(getAssets().open("./images/" + image_name));
+                imagesFromAsset.add(getAssets().open("test_images/" + image_name));
             }
 
             for (InputStream inputStream : imagesFromAsset) {
-                detect(inputStream, "DSFD_mobile.pt");
+
+                // ============================== System Operation Time Check
+
+                long startTime = System.nanoTime();
+
+                IValue[] result = detect(inputStream, "Retinaface_resnet50_mobile.pt");
+                counter += 1;
+
+                long endTime = System.nanoTime();
+
+                // Total time (end - start)
+                long lTime = endTime - startTime;
+                Log.d("Operation Time", (lTime/1000000.0) + "(ms)");
+                Log.d("Operation Order", counter + "(unit)");
+
+                // ============================== Model Inference Result Check
+
+                Log.d("Inference Length", String.valueOf(result.length));
+                for (IValue iValue : result) {
+                    if (iValue.isTensor()) {
+                        Tensor valueTensor = iValue.toTensor();
+                        float[] valueFloat = valueTensor.getDataAsFloatArray();
+
+                        Log.d("Inference Value", String.valueOf(valueFloat));
+                    }
+                }
             }
 
         } catch (IOException e) {
@@ -49,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void detect(InputStream inputStream, String model_name) throws IOException {
+    private IValue[] detect(InputStream inputStream, String model_name) throws IOException {
         Bitmap bitmap = null;
         Module module = null;
 
@@ -73,16 +99,7 @@ public class MainActivity extends AppCompatActivity {
         // final Tensor outputTensor = module.forward(IValue.from(inputTensor)).toTensor();
         final IValue[] outputIValue = module.forward(IValue.from(inputTensor)).toTuple();
 
-        Log.d("Inference Length", String.valueOf(outputIValue.length));
-
-        for (IValue iValue : outputIValue) {
-            if (iValue.isTensor()) {
-                Tensor valueTensor = iValue.toTensor();
-                float[] valueFloat = valueTensor.getDataAsFloatArray();
-
-                Log.d("Inference Value", String.valueOf(valueFloat));
-            }
-        }
+        return outputIValue;
     }
 
     /**
