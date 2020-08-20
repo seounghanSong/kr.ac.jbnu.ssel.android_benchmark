@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
                 long startTime = System.nanoTime();
 
-                IValue[] result = detect(inputStream, "Retinaface_resnet50_mobile.pt");
+                IValue[] result = detect(inputStream, "Retinaface_mobilenetV1_mobile.pt");
                 counter += 1;
 
                 long endTime = System.nanoTime();
