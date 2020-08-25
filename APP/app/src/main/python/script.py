@@ -1,3 +1,9 @@
+import torch
+import numpy as np
+
+from math import ceil
+from itertools import product as product
+
 cfg_mnet = {
     'name': 'mobilenet0.25',
     'min_sizes': [[16, 32], [64, 128], [256, 512]],
@@ -17,6 +23,7 @@ cfg_mnet = {
     'in_channel': 32,
     'out_channel': 64
 }
+
 
 class PriorBox(object):
     def __init__(self, cfg, image_size=None, phase='train'):
@@ -78,7 +85,34 @@ def batched_decode(loc, priors, variances):
     return boxes
 
 
-def main(loc, conf, height, width):
+def JtoTensor(Jarray, columns):
+    temp_list = list()
+
+    for item in Jarray:
+        temp_list.append(item)
+
+    dimension = int(len(temp_list)/columns)
+
+    temp_tensor = torch.Tensor(temp_list).view(-1, columns).unsqueeze(dim=1).view(1, dimension, columns)
+    return temp_tensor
+
+# TODO: carried input is not suitable for below function
+def locate_faces(bboxes):
+    temp_list = list()
+
+    for bbox in bboxes:
+        x_min, y_min, x_max, y_max, conf = [int(_) for _ in bbox]
+        print("draw_faces : {}, {}, {}, {}".format(x_min, y_min, x_max, y_max))
+
+        temp_list.append(x_min)
+        temp_list.append(y_min)
+        temp_list.append(x_max)
+        temp_list.append(y_max)
+
+    return temp_list
+
+
+def detect(loc, conf, height, width):
     scores = conf[:, :, 1:]
     priorbox = PriorBox(cfg_mnet, image_size=(height, width))
     priors = priorbox.forward()
@@ -87,4 +121,23 @@ def main(loc, conf, height, width):
     boxes = batched_decode(loc, prior_data, cfg_mnet['variance'])
     boxes = torch.cat((boxes, scores), dim=-1)
 
+    # TODO: matrix manipulation should be done here!!
+    # boxes ==> torch.Size([1, 28928, 5])
+    # desired Result.shape ==> (4, 5) np.ndarray
+
     return boxes
+
+
+def main(locJArray, confJArray, height, width):
+    loc = JtoTensor(locJArray, 4) # torch.Size([1, 28928, 4])
+    conf = JtoTensor(confJArray, 2) # torch.Size([1, 28928, 2])
+
+    detections = detect(loc, conf, height, width).numpy()
+    detections = np.squeeze(detections[:, :4], axis=0)
+    # desired detections.shape ==> (4, 4) np.ndarray
+
+    # number of instance
+    num_of_detected_faces = detections.shape[0]
+
+    return num_of_detected_faces
+

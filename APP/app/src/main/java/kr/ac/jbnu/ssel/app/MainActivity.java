@@ -21,12 +21,14 @@ import org.pytorch.Module;
 import org.pytorch.Tensor;
 import org.pytorch.torchvision.TensorImageUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -102,13 +104,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (tensorList.size() == 3) {
-            // TODO: Running the Python script
             Python py = Python.getInstance();
             final PyObject pyObject = py.getModule("script");
 
-            PyObject pyobj = pyObject.callAttr("main", tensorList.get(0), tensorList.get(1), height, width);
-            Log.d("detection_result", pyobj.toString());
+            // Check the elements within the tensor
+            float[] locFloatArray = tensorList.get(0).getDataAsFloatArray();
+            float[] confFloatArray = tensorList.get(1).getDataAsFloatArray();
+            // ====================================
+
+            pyObject.callAttr("main", locFloatArray, confFloatArray, height, width);
         }
+
+        // Pause
+//        if (tensorList.size() == 3) {
+//            // TODO: Running the Python script
+//            Python py = Python.getInstance();
+//            final PyObject pyObject = py.getModule("script");
+//
+//            PyObject pyobj = pyObject.callAttr("main", tensorList.get(0), tensorList.get(1), height, width);
+//            Log.d("detection_result", pyobj.toString());
+//        }
     }
 
     private IValue[] detect(Bitmap bitmap, String model_name) throws IOException {

@@ -26,6 +26,7 @@ android {
                 install "torch==1.4.0"
                 install "torchvision==0.5.0"
                 install "numpy==1.17.4"
+                // install "opencv-python==4.1.2.30"
             }
         }
 
